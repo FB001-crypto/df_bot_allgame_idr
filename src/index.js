@@ -43,9 +43,22 @@ async function main() {
     try {
       const base = String(MAIN_SITE_URL || '').split('#')[0];
       if (!token) return '';
-      // 在主站URL中添加语言参数
-      const baseWithLang = base.includes('?') ? `${base}&lang=id` : `${base}?lang=id`;
-      const hash = `tgToken=${encodeURIComponent(token)}${username?`&username=${encodeURIComponent(username)}`:''}`;
+      
+      // 智能处理URL参数拼接
+      let baseWithLang;
+      if (base.includes('?')) {
+        // 如果URL已包含查询参数，检查是否已有lang参数
+        const url = new URL(base);
+        if (!url.searchParams.has('lang')) {
+          url.searchParams.set('lang', 'id');
+        }
+        baseWithLang = url.toString();
+      } else {
+        // 如果URL没有查询参数，直接添加
+        baseWithLang = `${base}?lang=id`;
+      }
+      
+      const hash = `tgToken=${encodeURIComponent(token)}${username?`&username=${encodeURIComponent(username)}`:''}`;;
       return `${baseWithLang}#${hash}`;
     } catch { return ''; }
   }

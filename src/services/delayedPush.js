@@ -33,13 +33,13 @@ class DelayedPushService {
         await this.sendTutorialMenu(userId);
         this.pendingPushes.delete(userId);
       } catch (error) {
-        console.error(`延时推送失败 - 用户 ${userId}:`, error);
+        console.error(`Gagal mengirim push tertunda - pengguna ${userId}:`, error);
         this.pendingPushes.delete(userId);
       }
     }, delayMs);
 
     this.pendingPushes.set(userId, timeoutId);
-    console.log(`已安排延时推送 - 用户 ${userId}，延时 ${delayMs}ms`);
+    console.log(`Push tertunda telah dijadwalkan - pengguna ${userId}, delay ${delayMs}ms`);
   }
 
   /**
@@ -51,7 +51,7 @@ class DelayedPushService {
     if (timeoutId) {
       clearTimeout(timeoutId);
       this.pendingPushes.delete(userId);
-      console.log(`已取消延时推送 - 用户 ${userId}`);
+      console.log(`Push tertunda dibatalkan - pengguna ${userId}`);
     }
   }
 
@@ -60,11 +60,11 @@ class DelayedPushService {
    * @param {string} userId - 用户ID
    */
   async sendTutorialMenu(userId) {
-    const menuText = `🎮 **游戏教程指南**\n\n欢迎来到AllGame！为了帮助您更好地体验游戏，我们为您准备了详细的教程指南。\n\n请选择您需要的帮助：`;
+    const menuText = `🎮 **Panduan Tutorial Game**\n\nSelamat datang di AllGame! Untuk membantu Anda menikmati pengalaman bermain yang lebih baik, kami telah menyiapkan panduan tutorial yang detail.\n\nSilakan pilih bantuan yang Anda butuhkan:`;
     
     const keyboard = Markup.inlineKeyboard([
-      [Markup.button.callback('🏆 查看是否获胜', `tutorial_win|${userId}`)],
-      [Markup.button.callback('💰 填写Dana信息', `tutorial_dana|${userId}`)]
+      [Markup.button.callback('🏆 Lihat Hasil Kemenangan', `tutorial_win|${userId}`)],
+      [Markup.button.callback('💰 Isi Informasi Dana', `tutorial_dana|${userId}`)]
     ]);
 
     await this.funnel.reply({ chat: { id: userId } }, menuText, {
@@ -90,8 +90,8 @@ class DelayedPushService {
         await this.sendDanaTutorial(ctx, userId);
       }
     } catch (error) {
-      console.error('处理教程回调失败:', error);
-      await ctx.answerCbQuery('操作失败，请稍后重试');
+      console.error('Gagal memproses callback tutorial:', error);
+      await ctx.answerCbQuery('Operasi gagal, silakan coba lagi nanti');
     }
   }
 
@@ -101,11 +101,11 @@ class DelayedPushService {
    * @param {string} userId - 用户ID
    */
   async sendWinTutorial(ctx, userId) {
-    const tutorialText = `🏆 **如何查看游戏结果**\n\n` +
-      `1️⃣ 进入游戏后，完成10局游戏\n` +
-      `2️⃣ 在游戏记录查看您的游戏局数\n` +
-      `3️⃣ 等待晚上xx:xx点公布中奖名单\n` +
-      `4️⃣ 检查您的Dana账户，确认是否已收到奖励`;
+    const tutorialText = `🏆 **Cara Melihat Hasil Game**\n\n` +
+      `1️⃣ Setelah masuk game, selesaikan 10 putaran permainan\n` +
+      `2️⃣ Lihat jumlah permainan Anda di riwayat game\n` +
+      `3️⃣ Tunggu pengumuman daftar pemenang pada malam hari pukul xx:xx\n` +
+      `4️⃣ Periksa akun Dana Anda untuk memastikan hadiah telah diterima`;
 
     try {
       // 优先使用多张图片配置
@@ -139,8 +139,8 @@ class DelayedPushService {
         await this.funnel.reply(ctx, tutorialText, { parse_mode: 'Markdown' });
       }
     } catch (error) {
-      console.error('发送获胜教程失败:', error);
-      // 如果图片发送失败，回退到纯文字
+      console.error('Gagal mengirim tutorial kemenangan:', error);
+      // Jika gagal mengirim gambar, kembali ke teks saja
       await this.funnel.reply(ctx, tutorialText, { parse_mode: 'Markdown' });
     }
   }
@@ -151,19 +151,19 @@ class DelayedPushService {
    * @param {string} userId - 用户ID
    */
   async sendDanaTutorial(ctx, userId) {
-    const tutorialText = `💰 **Dana信息填写指南**\n\n` +
-      `为了确保您能顺利提取奖金，请按照以下步骤填写Dana信息：\n\n` +
-      `1️⃣ 完成10局游戏后，点击下方的Google表单链接\n` +
-      `2️⃣ 准确填写您的Dana账户信息\n` +
-      `3️⃣ 确保信息无误后提交表单\n` +
-      `4️⃣ 等待奖励发放\n\n` +
-      `⚠️ **重要提醒：**\n` +
-      `• 请确保Dana账户信息准确无误\n` +
-      `• 错误信息可能导致提取延迟\n` +
-      `• 每个账户只能绑定一个Dana账户`;
+    const tutorialText = `💰 **Panduan Mengisi Informasi Dana**\n\n` +
+      `Untuk memastikan Anda dapat menarik hadiah dengan lancar, silakan ikuti langkah-langkah berikut untuk mengisi informasi Dana:\n\n` +
+      `1️⃣ Setelah menyelesaikan 10 putaran permainan, klik link Google Form di bawah\n` +
+      `2️⃣ Isi informasi akun Dana Anda dengan akurat\n` +
+      `3️⃣ Pastikan informasi benar sebelum mengirim formulir\n` +
+      `4️⃣ Tunggu distribusi hadiah\n\n` +
+      `⚠️ **Pengingat Penting:**\n` +
+      `• Pastikan informasi akun Dana akurat dan benar\n` +
+      `• Informasi yang salah dapat menyebabkan keterlambatan penarikan\n` +
+      `• Setiap akun hanya dapat mengikat satu akun Dana`;
 
     const keyboard = Markup.inlineKeyboard([
-      [Markup.button.url('📝 填写Dana信息表单', DANA_FORM_URL)]
+      [Markup.button.url('📝 Isi Formulir Informasi Dana', DANA_FORM_URL)]
     ]);
 
     await this.funnel.reply(ctx, tutorialText, {

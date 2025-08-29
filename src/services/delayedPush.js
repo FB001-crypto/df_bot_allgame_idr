@@ -104,7 +104,7 @@ class DelayedPushService {
     const tutorialText = `🏆 **Cara Melihat Hasil Game**\n\n` +
       `1️⃣ Setelah masuk game, selesaikan 10 putaran permainan\n` +
       `2️⃣ Lihat jumlah permainan Anda di riwayat game\n` +
-      `3️⃣ Tunggu pengumuman daftar pemenang pada malam hari pukul xx:xx\n` +
+      `3️⃣ Tunggu pengumuman pemenangnya pada pukul 01:00 besok (UTC+8)\n` +
       `4️⃣ Periksa akun Dana Anda untuk memastikan hadiah telah diterima`;
 
     try {

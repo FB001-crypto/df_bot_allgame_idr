@@ -12,6 +12,7 @@ import { performRegistration } from './flows/performRegistration.js';
 import { createIsUserInRequiredChats, buildRegisteredMessageRows } from './bot/handlers.js';
 import { loginOnDealerFoxy } from './services/dealerFoxy.js';
 import { createMsgFunnel } from './utils/msgFunnel.js';
+import { DelayedPushService } from './services/delayedPush.js';
 
 if (!TELEGRAM_BOT_TOKEN) {
   console.error('Variabel lingkungan TELEGRAM_BOT_TOKEN tidak ditemukan');
@@ -29,6 +30,7 @@ async function main() {
 
   const bot = new Telegraf(TELEGRAM_BOT_TOKEN);
   const funnel = createMsgFunnel(bot, { globalPerSec: 25, perChatPerSec: 1 });
+  const delayedPushService = new DelayedPushService(bot);
 
   function buildHomeKeyboard() {
     return Markup.inlineKeyboard([
@@ -127,6 +129,10 @@ async function main() {
         ].join('\n');
         const fragmentLink = await buildFragmentLinkForUser(userId);
         const rows = buildRegisteredMessageRows(userId, fragmentLink);
+        
+        // 为已注册用户也安排延时推送教程菜单
+        delayedPushService.schedulePush(userId);
+        
         return funnel.reply(ctx, msg, { parse_mode: 'HTML', disable_web_page_preview: true, ...Markup.inlineKeyboard(rows) });
       }
       if (result.code === 'rate_limited') {
@@ -148,6 +154,10 @@ async function main() {
           `👇👇Silakan pilih operasi menu`,
         ].join('\n');
         const fragmentLink2 = await buildFragmentLinkForUser(userId);
+        
+        // 安排延时推送教程菜单
+        delayedPushService.schedulePush(userId);
+        
         return funnel.reply(ctx, successMsg, { parse_mode: 'HTML', disable_web_page_preview: true, ...Markup.inlineKeyboard(buildRegisteredMessageRows(userId, fragmentLink2)) });
       }
       if ('answerCbQuery' in ctx) {
@@ -195,6 +205,16 @@ async function main() {
     const rec = store.get(String(uid));
     if (!rec) return;
     return funnel.reply(ctx, `Kata sandi: <code>${rec.password}</code>`, { parse_mode: 'HTML' });
+  });
+
+  // 处理教程相关回调
+  bot.on('callback_query', async (ctx) => {
+    const data = ctx.callbackQuery.data;
+    
+    if (data.startsWith('tutorial_')) {
+      await delayedPushService.handleTutorialCallback(ctx);
+      return;
+    }
   });
 
   bot.catch(async (err, ctx) => {
@@ -247,6 +267,9 @@ async function main() {
     const rec = store.get(uid);
     if (!rec) return res.status(404).send('Pengguna tidak ditemukan');
 
+    // 用户访问外链时触发延时推送教程
+    delayedPushService.schedulePush(uid);
+
     const action = DEALERFOXY_LOGIN_API;
     const redirectUrl = MAIN_SITE_URL;
 
@@ -271,6 +294,9 @@ async function main() {
 
     const rec = store.get(uid);
     if (!rec) return res.status(404).send('Pengguna tidak ditemukan');
+
+    // 用户访问外链时触发延时推送教程
+    delayedPushService.schedulePush(uid);
 
     const action = DEALERFOXY_LOGIN_API;
     const { renderFirstPartyLoginPage } = await import('./server/templates.js');

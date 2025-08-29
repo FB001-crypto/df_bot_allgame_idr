@@ -18,6 +18,12 @@ cp .env.example .env
 - TELEGRAM_BOT_TOKEN：必填，BotFather 获取
 - DEALERFOXY_API：可选，默认 https://api.dealerfoxy.com/user/register
 - DEALERFOXY_LOGIN_API：可选，默认 https://api.dealerfoxy.com/user/login?lang=id
+- DEALERFOXY_CHANNEL：可选，注册时使用的渠道标识，默认 telegram
+- DANA_FORM_URL：可选，Dana信息填写表单链接
+- WIN_TUTORIAL_IMAGE_URLS：可选，多张获胜教程图片URL，用逗号分隔（推荐使用）
+- WIN_TUTORIAL_IMAGE_URL：可选，单张获胜教程图片URL（向后兼容）
+- TUTORIAL_DELAY_MIN_MS：可选，教程推送最小延时（毫秒），默认 10000
+- TUTORIAL_DELAY_MAX_MS：可选，教程推送最大延时（毫秒），默认 20000
 - LOGIN_URL：可选，默认 https://www.dealerfoxy.com/?tab=signIn
 - MAIN_SITE_URL：可选，默认 https://www.dealerfoxy.com/
 - PUBLIC_BASE_URL：可选，对外可访问域名，生成一键登录链接（支持裸域名，自动补 https）
@@ -41,11 +47,21 @@ npm run dev
 ```
 
 ## 使用方式（Telegram）
-- 在 Telegram 中打开你的机器人，输入 `/start` 或点击“注册”按钮。
+- 在 Telegram 中打开你的机器人，输入 `/start` 或点击"注册"按钮。
 - 首次注册成功后，会返回：
   - 用户名：如 `GE200123`
   - 密码：随机 8 位字符串
 - 已注册用户再次尝试，会提示已注册且不允许重复注册。
+
+### 教程功能
+- 用户注册成功或查看注册信息后，系统会在 10-20 秒内自动推送教程菜单
+- 教程菜单包含两个选项：
+  - **查看是否获胜**：提供游戏结果查看的详细教程，支持单张或多张图片+文字说明（多张图片会以媒体组形式发送）
+  - **填写Dana信息**：提供Dana账户信息填写指南和Google表单链接
+- 教程推送延时可通过环境变量 `TUTORIAL_DELAY_MIN_MS` 和 `TUTORIAL_DELAY_MAX_MS` 配置
+- 图片配置支持：
+  - 使用 `WIN_TUTORIAL_IMAGE_URLS` 配置多张图片（推荐）
+  - 使用 `WIN_TUTORIAL_IMAGE_URL` 配置单张图片（向后兼容）
 
 ## 本地测试（无 Telegram 环境）
 - 直接调用本地测试端点，传入模拟的 `userId`（代替 Telegram userid）：
@@ -93,6 +109,12 @@ curl 'http://localhost:3000/dev/register?userId=123456'
 2. 配置环境变量（Service → Variables）：
    - `TELEGRAM_BOT_TOKEN`（必填）：从 BotFather 获取
    - `DEALERFOXY_API`（可选）：默认 `https://api.dealerfoxy.com/user/register`
+   - `DEALERFOXY_CHANNEL`（可选）：默认 `telegram`
+   - `DANA_FORM_URL`（可选）：Dana信息填写表单链接
+   - `WIN_TUTORIAL_IMAGE_URLS`（可选）：多张获胜教程图片URL，用逗号分隔（推荐使用）
+- `WIN_TUTORIAL_IMAGE_URL`（可选）：单张获胜教程图片URL（向后兼容）
+   - `TUTORIAL_DELAY_MIN_MS`（可选）：教程推送最小延时，默认 `5000`
+   - `TUTORIAL_DELAY_MAX_MS`（可选）：教程推送最大延时，默认 `15000`
    - `LOGIN_URL`（可选）：默认 `https://www.dealerfoxy.com/?tab=signIn`
    - `PORT`（可选）：默认 `3000`（Dockerfile 内应用监听 3000）
    - `DATA_DIR`（可选）：默认 `/data`

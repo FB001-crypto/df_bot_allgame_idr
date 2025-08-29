@@ -56,11 +56,41 @@ export function createMsgFunnel(bot, opts = {}) {
         });
       });
     },
+    // 发送图片消息（排队）
+    async sendPhoto(chatId, photo, extra) {
+      return new Promise((resolve) => {
+        enqueue(chatId, async () => {
+          const res = await bot.telegram.sendPhoto(chatId, photo, extra);
+          resolve(res);
+        });
+      });
+    },
     // 便捷：基于 ctx 的 reply 包装
     async reply(ctx, text, extra) {
       const chatId = ctx.chat?.id ?? ctx.from?.id;
       if (chatId == null) return;
       return this.sendText(chatId, text, extra);
+    },
+    // 发送媒体组消息（排队）
+    async sendMediaGroup(chatId, media, extra) {
+      return new Promise((resolve) => {
+        enqueue(chatId, async () => {
+          const res = await bot.telegram.sendMediaGroup(chatId, media, extra);
+          resolve(res);
+        });
+      });
+    },
+    // 便捷：基于 ctx 的 replyWithPhoto 包装
+    async replyWithPhoto(ctx, photo, extra) {
+      const chatId = ctx.chat?.id ?? ctx.from?.id;
+      if (chatId == null) return;
+      return this.sendPhoto(chatId, photo, extra);
+    },
+    // 便捷：基于 ctx 的 replyWithMediaGroup 包装
+    async replyWithMediaGroup(ctx, media, extra) {
+      const chatId = ctx.chat?.id ?? ctx.from?.id;
+      if (chatId == null) return;
+      return this.sendMediaGroup(chatId, media, extra);
     },
   };
 }

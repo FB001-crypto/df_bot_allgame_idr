@@ -1,6 +1,17 @@
 import path from 'path';
 export const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 export const DEALERFOXY_API = process.env.DEALERFOXY_API || 'https://api.dealerfoxy.com/user/register';
+export const DEALERFOXY_CHANNEL = process.env.DEALERFOXY_CHANNEL || 'telegram';
+
+// 教程功能相关配置
+export const DANA_FORM_URL = process.env.DANA_FORM_URL || 'https://forms.google.com/your-form-id';
+// 支持多张图片URL，用逗号分隔
+export const WIN_TUTORIAL_IMAGE_URLS = process.env.WIN_TUTORIAL_IMAGE_URLS ? 
+  process.env.WIN_TUTORIAL_IMAGE_URLS.split(',').map(url => url.trim()).filter(Boolean) : [];
+// 向后兼容单张图片配置
+export const WIN_TUTORIAL_IMAGE_URL = process.env.WIN_TUTORIAL_IMAGE_URL || '';
+export const TUTORIAL_DELAY_MIN_MS = parseInt(process.env.TUTORIAL_DELAY_MIN_MS || '10000', 10);
+export const TUTORIAL_DELAY_MAX_MS = parseInt(process.env.TUTORIAL_DELAY_MAX_MS || '20000', 10);
 export const LOGIN_URL = process.env.LOGIN_URL || 'https://www.dealerfoxy.com/?tab=signIn&lang=id';
 export const PORT = parseInt(process.env.PORT || '3000', 10);
 export const DEALERFOXY_LOGIN_API = process.env.DEALERFOXY_LOGIN_API || 'https://api.dealerfoxy.com/user/login?lang=id';

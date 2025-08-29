@@ -1,8 +1,8 @@
 import axios from 'axios';
-import { DEALERFOXY_API, DEALERFOXY_LOGIN_API } from '../config.js';
+import { DEALERFOXY_API, DEALERFOXY_LOGIN_API, DEALERFOXY_CHANNEL } from '../config.js';
 
 export async function registerOnDealerFoxy({ username, password, deviceId }) {
-  const payload = { username, password, repassword: password, device_id: String(deviceId), channel: 'telegram' };
+  const payload = { username, password, repassword: password, device_id: String(deviceId), channel: DEALERFOXY_CHANNEL };
   const resp = await axios.post(DEALERFOXY_API, payload, {
     headers: { 'Content-Type': 'application/json' }, timeout: 15000, validateStatus: (s) => s >= 200 && s < 500,
   });
